@@ -11,9 +11,10 @@ type Controller http_server.Controller
 func NewController(
 	rootLogger log.RootLogger,
 	readService todo_applications.ReadService,
+	writeService todo_applications.WriteService,
 ) Controller {
 	logger := rootLogger.Child("todoRestController")
-	return controller{logger, readService}
+	return controller{logger, readService, writeService}
 }
 
 type controller struct {
@@ -27,4 +28,5 @@ func (ctrl controller) RegisterRoutes(router http_server.Router) {
 	routeGroup := router.Group(prefix)
 	routeGroup.Get("", ctrl.list)
 	routeGroup.Get("/:todoID", ctrl.getByID)
+	routeGroup.Post("", ctrl.create)
 }

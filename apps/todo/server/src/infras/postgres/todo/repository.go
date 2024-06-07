@@ -74,6 +74,25 @@ func (repo repository) List(ctx context.Context, filter todo_applications.QueryF
 
 	return todos, nil
 }
+
+func (repo repository) Create(ctx context.Context, todo domains.Todo) error {
+	repo.logger.Info(ctx, "Creating todo %s", todo.ID())
+
+	docCreate := repo.client.TodoDoc.Create().
+		SetID(todo.ID()).
+		SetName(todo.Name()).
+		SetDesc(todo.Description()).
+		SetDueAt(todo.DueAt()).
+		SetStatus(tododoc.Status(todo.Status()))
+
+	err := docCreate.Exec(ctx)
+	if err != nil {
+		repo.logger.Error(ctx, err)
+		return err
+	}
+
+	return nil
+}
 func (repo repository) handleEntNotFoundError(ctx context.Context, id string) error {
 	err := errors.New(errors.ErrorEntityNotFound, fmt.Sprintf("Todo %s not found", id))
 	repo.logger.Warn(ctx, err)
