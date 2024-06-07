@@ -5,6 +5,7 @@
 go 1.21
 
 use (
+	./apps/todo/server/src
 	./libs/go/errors
 	./libs/go/http-server
 )
