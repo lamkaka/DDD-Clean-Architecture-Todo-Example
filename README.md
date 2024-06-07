@@ -27,10 +27,10 @@ graph TD
 
 ### Install & Configure Development Tools (Prerequisites)
 - NodeJS (Required for working with our Monorepo tool)
-  - https://nodejs.org/en/download/ (Tested with v18.x.x)
+  - https://nodejs.org/en/download/ (Tested with v20.14.x)
 - PNpm (A package manager for NodeJS dependencies)
-  - https://pnpm.io/installation (Tested with 7.14.0)
-- Go (Tested with v1.21.9)
+  - https://pnpm.io/installation (Tested with v9.2.x)
+- Go (Tested with v1.21.x)
   - https://go.dev/doc/install
 - Docker Desktop (Required for our system to run with docker)
   - https://docs.docker.com/desktop/install/mac-install/
