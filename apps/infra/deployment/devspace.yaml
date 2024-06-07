@@ -1,0 +1,40 @@
+version: v2beta1
+name: infra
+
+imports:
+  - path: "../../.."
+
+pipelines:
+  deploy:
+    run: |-
+      create_deployments --all
+
+deployments:
+  infra:
+    namespace: demo-devspace
+    helm:
+      chart:
+        name: ./chart
+      values:
+        ingress:
+          resources:
+            requests: {}
+        postgres:
+          resources:
+            requests: {}
+
+dev:
+  ingress:
+    labelSelector:
+      app.kubernetes.io/instance: infra
+      app.kubernetes.io/name: ingress
+    ports:
+      - port: '9000'
+    open:
+      - url: http://localhost:9000/dashboard/
+  postgres:
+    labelSelector:
+      app.kubernetes.io/instance: infra
+      app.kubernetes.io/name: postgres
+    ports:
+      - port: '5432'

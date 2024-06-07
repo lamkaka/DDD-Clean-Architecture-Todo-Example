@@ -1,0 +1,49 @@
+ingress:
+  ingressClass:
+    enabled: true
+    isDefaultClass: true
+  nodeSelector:
+    kubernetes.io/os: linux
+  deployment:
+    kind: DaemonSet
+  service:
+    type: NodePort
+  ports:
+    web:
+      nodePort: 30080
+  resources:
+    requests:
+      cpu: '100m'
+      memory: '512Mi'
+    limits: {}
+
+postgres:
+  image:
+    tag: 14.9.0-debian-11-r58
+  volumePermissions:
+    enabled: true
+  auth:
+    username: demo
+    password: demo
+  primary:
+    nodeSelector:
+      kubernetes.io/os: linux
+    requests:
+      requests:
+        cpu: '100m'
+        memory: '512Mi'
+      limits: {}
+    initdb:
+      scripts:
+        00_init_pg_stat_statements.sh: |
+          #!/bin/bash
+          sed -Ei 's/^(local\s+all\s+all\s+)(md5|peer)$/\1trust/' /opt/bitnami/postgresql/conf/pg_hba.conf
+          pg_ctl reload
+          /opt/bitnami/postgresql/bin/psql -U postgres -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;'
+  postgresqlSharedPreloadLibraries: "pgaudit,pg_stat_statements"
+  metrics:
+    primary:
+      extendedConfiguration: |
+        shared_preload_libraries = 'pg_stat_statements'
+        pg_stat_statements.max = 10000
+        pg_stat_statements.track = all

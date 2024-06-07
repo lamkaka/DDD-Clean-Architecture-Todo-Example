@@ -1,0 +1,9 @@
+dependencies:
+- name: traefik
+  repository: https://helm.traefik.io/traefik
+  version: 20.2.0
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 11.9.13
+digest: sha256:bd2b042cac55076cccbedbc046b717b57932f9c7ab8adbb73e878154b20754ea
+generated: "2024-06-04T15:38:10.3172763+08:00"

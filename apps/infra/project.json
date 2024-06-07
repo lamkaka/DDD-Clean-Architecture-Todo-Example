@@ -1,0 +1,22 @@
+{
+  "name": "infra",
+  "root": "apps/infra",
+  "projectType": "application",
+  "implicitDependencies": [],
+  "targets": {
+    "deploy-local": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "devspace deploy --no-warn",
+        "cwd": "apps/infra/deployment"
+      }
+    },
+    "cleanup-local": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "devspace purge --no-warn",
+        "cwd": "apps/infra/deployment"
+      }
+    }
+  }
+}

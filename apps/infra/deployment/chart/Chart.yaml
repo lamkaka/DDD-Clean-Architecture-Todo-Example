@@ -1,0 +1,14 @@
+apiVersion: v2
+name: infra
+description: Silica
+type: application
+version: 0.0.0
+dependencies:
+  - name: traefik
+    version: 20.2.0
+    alias: ingress
+    repository: https://helm.traefik.io/traefik
+  - name: postgresql
+    version: 11.9.13
+    alias: postgres
+    repository: https://charts.bitnami.com/bitnami
