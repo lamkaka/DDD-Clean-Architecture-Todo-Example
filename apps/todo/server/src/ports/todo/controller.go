@@ -25,5 +25,6 @@ type controller struct {
 func (ctrl controller) RegisterRoutes(router http_server.Router) {
 	prefix := "/todos"
 	routeGroup := router.Group(prefix)
+	routeGroup.Get("", ctrl.list)
 	routeGroup.Get("/:todoID", ctrl.getByID)
 }

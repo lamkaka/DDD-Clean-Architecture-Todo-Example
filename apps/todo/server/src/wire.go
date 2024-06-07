@@ -17,6 +17,7 @@ func initializeServer(ctx context.Context) (http.Server, error) {
 	wire.Build(
 		infras.Set,
 		ports.Set,
+		applications.Set,
 	)
 	return nil, nil
 }

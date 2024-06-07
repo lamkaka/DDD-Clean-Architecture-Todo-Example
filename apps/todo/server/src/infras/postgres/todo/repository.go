@@ -45,6 +45,35 @@ func (repo repository) GetByID(ctx context.Context, id string) (domains.Todo, er
 	return todo, nil
 }
 
+func (repo repository) List(ctx context.Context, filter todo_applications.QueryFilter) (domains.Todos, error) {
+	repo.logger.Info(ctx, "Listing todos")
+
+	todoDocQuery := repo.client.TodoDoc.Query()
+
+	if filter.Statuses != nil {
+		statuses := lo.Map(filter.Statuses, func(status domains.TodoStatus, index int) tododoc.Status {
+			return tododoc.Status(status)
+		})
+		todoDocQuery = todoDocQuery.Where(tododoc.StatusIn(statuses...))
+	}
+	if filter.DueAtAfter != nil {
+		todoDocQuery = todoDocQuery.Where(tododoc.CreatedAtGT(*filter.DueAtAfter))
+	}
+
+	todoDocs, err := todoDocQuery.All(ctx)
+	if err != nil {
+		repo.logger.Error(ctx, err)
+		return nil, err
+	}
+
+	todos, err := docsToEntities(todoDocs)
+	if err != nil {
+		repo.logger.Error(ctx, err)
+		return nil, err
+	}
+
+	return todos, nil
+}
 func (repo repository) handleEntNotFoundError(ctx context.Context, id string) error {
 	err := errors.New(errors.ErrorEntityNotFound, fmt.Sprintf("Todo %s not found", id))
 	repo.logger.Warn(ctx, err)

@@ -32,3 +32,19 @@ func (svc readService) GetByID(ctx context.Context, id string) (domains.Todo, er
 
 	return todo, nil
 }
+
+func (svc readService) List(ctx context.Context, filter QueryFilter) (domains.Todos, error) {
+	svc.logger.Info(ctx, "Listing todos")
+
+	todos, err := svc.repository.List(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	return todos, nil
+}
+
+type QueryFilter struct {
+	Statuses   []domains.TodoStatus
+	DueAtAfter *time.Time
+}
