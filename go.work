@@ -6,4 +6,5 @@ go 1.21
 
 use (
 	./libs/go/errors
+	./libs/go/http-server
 )
