@@ -93,6 +93,28 @@ func (repo repository) Create(ctx context.Context, todo domains.Todo) error {
 
 	return nil
 }
+
+func (repo repository) UpdateByID(ctx context.Context, id string, todo domains.Todo) (domains.Todo, error) {
+	docUpdate := repo.client.TodoDoc.UpdateOneID(todo.ID()).
+		SetName(todo.Name()).
+		SetDesc(todo.Description()).
+		SetDueAt(todo.DueAt()).
+		SetStatus(tododoc.Status(todo.Status()))
+
+	doc, err := docUpdate.Save(ctx)
+	if err != nil {
+		repo.logger.Error(ctx, err)
+		return nil, err
+	}
+
+	todo, err = docToEntity(doc)
+	if err != nil {
+		repo.logger.Error(ctx, err)
+		return nil, err
+	}
+	return todo, nil
+}
+
 func (repo repository) DeleteByID(ctx context.Context, id string) error {
 	repo.logger.Info(ctx, "Deleting todo %s", id)
 
