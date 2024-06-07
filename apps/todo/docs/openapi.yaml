@@ -1,0 +1,256 @@
+openapi: '3.0.2'
+info:
+  title: TODO Open API
+  version: 0.1.0
+servers:
+  - url: /
+  - url: http://{hostname}:30080/todo
+    description: Local Cluster
+    variables:
+      hostname:
+        default: localhost
+tags:
+  - name: Todo
+paths:
+  /todos:
+    post:
+      operationId: createTodo
+      summary: Create Todo
+      tags: [Todo]
+      requestBody:
+        $ref: '#/components/requestBodies/TodoCreate'
+      responses:
+        '201':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/UnexpectedError'
+    get:
+      operationId: listTodos
+      summary: List Todos
+      tags: [Todo]
+      parameters:
+        - $ref: '#/components/parameters/TodoStatuses'
+        - $ref: '#/components/parameters/TodoDueAtAfter'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Todo'
+  /todos/{id}:
+    get:
+      operationId: getTodoByID
+      summary: Get Todo by ID
+      tags: [Todo]
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/UnexpectedError'
+    patch:
+      operationId: updateTodoByID
+      tags: [Todo]
+      summary: Update Todo by ID
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      requestBody:
+        $ref: '#/components/requestBodies/TodoUpdate'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+    delete:
+      operationId: deleteTodoByID
+      tags: [Todo]
+      summary: Delete Todo by ID
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+components:
+  parameters:
+    ID:
+      name: id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Todo/properties/id'
+    TodoStatuses:
+      x-go-name: TodoStatusesParam
+      name: statuses
+      in: query
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/TodoStatus'
+    TodoDueAtAfter:
+      x-go-name: TodoDueAtAfterParam
+      name: statuses
+      in: query
+      schema:
+        $ref: '#/components/schemas/DateTime'
+  requestBodies:
+    TodoCreate:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - description
+              - dueAt
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+                nullable: true
+              dueAt:
+                $ref: '#/components/schemas/DateTime'
+    TodoUpdate:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - description
+              - dueAt
+              - status
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+                nullable: true
+              dueAt:
+                $ref: '#/components/schemas/DateTime'
+                nullable: true
+              status:
+                $ref: '#/components/schemas/TodoStatus'
+                nullable: true
+  responses:
+    Success:
+      description: The request is successful
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - 'success'
+            properties:
+              success:
+                type: boolean
+    BadRequestError:
+      description: The server cannot understand the request. It needs to be fixed before retrying.
+    NotFoundError:
+      description: Entity can not be found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
+    ValidationError:
+      description: Entity validatation errors
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+    UnexpectedError:
+      description: Something went wrong unexpectedly.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnexpectedError'
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx3fej4j000008me39of4p39
+        name:
+          type: string
+          example: test
+        description:
+          type: string
+          example: test
+        dueAt:
+          $ref: '#/components/schemas/DateTime'
+        status:
+          $ref: '#/components/schemas/TodoStatus'
+    TodoStatus:
+      type: string
+      enum:
+        - NotStarted
+        - InProgress
+        - Completed
+    DateTime:
+      type: string
+      example: 2006-01-02T15:04:05-07:00
+      description: String in ISO 8601 format
+    NotFoundError:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+            - ENTITY_NOT_FOUND_ERROR
+        messages:
+          type: array
+          items:
+            type: string
+            example: Todo cannot be found
+    ValidationError:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+            - ENTITY_VALIDATION_ERROR
+        messages:
+          type: array
+          items:
+            type: string
+            example: Todo cannot be found
+    UnexpectedError:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+            - UNEXPECTED_ERROR
+        messages:
+          type: array
+          items:
+            type: string
+            example: Database connection failed

@@ -22,6 +22,7 @@ RUN apt update -y && \
 
 WORKDIR /
 
+COPY ./apps/todo/docs/openapi.yaml /var/openapi.yaml
 COPY --from=build bin/server bin/server
 
 EXPOSE 3000
