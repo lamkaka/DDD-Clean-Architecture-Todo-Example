@@ -1,0 +1,49 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "affected": {
+    "defaultBase": "master"
+  },
+  "workspaceLayout": {
+    "appsDir": "apps",
+    "libsDir": "libs"
+  },
+  "plugins": [],
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"],
+    "production": ["default"]
+  },
+  "targetDefaults": {
+    "fix": {
+      "dependsOn": ["install", "codegen"]
+    },
+    "lint": {
+      "dependsOn": ["install", "codegen"]
+    },
+    "codegen": {
+      "dependsOn": ["install", "^codegen"]
+    },
+    "test": {
+      "dependsOn": ["install", "codegen", "^test"]
+    },
+    "install": {
+      "dependsOn": ["^build"]
+    },
+    "build": {
+      "dependsOn": ["install", "codegen", "^build"],
+      "inputs": ["production", "^production"]
+    },
+    "deploy-local": {
+      "dependsOn": ["codegen", "^deploy-local"]
+    }
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["lint", "test", "build"],
+        "useDaemonProcess": false,
+        "parallel": 5
+      }
+    }
+  }
+}

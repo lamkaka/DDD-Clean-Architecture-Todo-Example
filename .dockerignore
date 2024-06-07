@@ -1,0 +1,12 @@
+.git
+**/.vagrant
+**/node_modules
+**/Dockerfile
+**/.dockerignore
+**/.env
+**/.coverage
+**/testdata
+**/target/debug/**
+**/target/release/**
+local
+

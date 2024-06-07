@@ -1,0 +1,19 @@
+{
+  "name": "demo",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "cluster:init": "k3d cluster create --config k3d/k3d.yaml",
+    "cluster:cleanup": "k3d cluster delete --config k3d/k3d.yaml"
+  },
+  "private": true,
+  "dependencies": {},
+  "devDependencies": {
+    "nx": "^15.2.1",
+    "@nrwl/cli": "^15.2.1",
+    "@nrwl/workspace": "^15.2.1",
+    "@nx-tools/nx-container": "^4.0.0",
+    "typescript": "~4.8.2",
+    "prettier": "^2.6.2"
+  }
+}

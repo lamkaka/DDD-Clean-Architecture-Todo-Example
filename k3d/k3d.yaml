@@ -1,0 +1,19 @@
+apiVersion: k3d.io/v1alpha4
+kind: Simple
+servers: 3
+metadata:
+  name: demo-dev
+image: rancher/k3s:v1.25.3-k3s1
+registries:
+  create:
+    name: demo-k3d-dev-registry
+    host: '0.0.0.0'
+    hostPort: '5000'
+  config: |
+    mirrors:
+      "demo.dev":
+        endpoint:
+          - http://demo-k3d-dev-registry:5000
+ports:
+  - port: 30080:30080
+    nodeFilters: [servers:*]
