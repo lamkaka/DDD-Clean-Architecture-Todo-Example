@@ -63,3 +63,14 @@ func (svc writeService) Create(ctx context.Context, cmd CreateCommand) (domains.
 
 	return todo, nil
 }
+
+func (svc writeService) DeleteByID(ctx context.Context, id string) error {
+	svc.logger.Info(ctx, "Deleting todo %s", id)
+
+	err := svc.repository.DeleteByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

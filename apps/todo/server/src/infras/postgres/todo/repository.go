@@ -93,6 +93,21 @@ func (repo repository) Create(ctx context.Context, todo domains.Todo) error {
 
 	return nil
 }
+func (repo repository) DeleteByID(ctx context.Context, id string) error {
+	repo.logger.Info(ctx, "Deleting todo %s", id)
+
+	err := repo.client.TodoDoc.DeleteOneID(id).Exec(ctx)
+
+	if ent.IsNotFound(err) {
+		return repo.handleEntNotFoundError(ctx, id)
+	}
+	if err != nil {
+		repo.logger.Error(ctx, err)
+		return err
+	}
+	return nil
+}
+
 func (repo repository) handleEntNotFoundError(ctx context.Context, id string) error {
 	err := errors.New(errors.ErrorEntityNotFound, fmt.Sprintf("Todo %s not found", id))
 	repo.logger.Warn(ctx, err)

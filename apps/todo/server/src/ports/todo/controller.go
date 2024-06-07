@@ -29,4 +29,5 @@ func (ctrl controller) RegisterRoutes(router http_server.Router) {
 	routeGroup.Get("", ctrl.list)
 	routeGroup.Get("/:todoID", ctrl.getByID)
 	routeGroup.Post("", ctrl.create)
+	routeGroup.Delete("/:todoID", ctrl.deleteByID)
 }
