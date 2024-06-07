@@ -57,7 +57,7 @@ $ npx nx test todo-server
 
 1. Boostrap a k8s cluster locally
 ```bash
-$ pnpm run cluster:cleanup
+$ pnpm run cluster:init
 ```
 
 2. Deploy infra and todo server to the local k8s cluster
