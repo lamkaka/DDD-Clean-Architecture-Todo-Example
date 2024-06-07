@@ -57,7 +57,7 @@ func (repo repository) List(ctx context.Context, filter todo_applications.QueryF
 		todoDocQuery = todoDocQuery.Where(tododoc.StatusIn(statuses...))
 	}
 	if filter.DueAtAfter != nil {
-		todoDocQuery = todoDocQuery.Where(tododoc.CreatedAtGT(*filter.DueAtAfter))
+		todoDocQuery = todoDocQuery.Where(tododoc.DueAtGTE(*filter.DueAtAfter))
 	}
 
 	todoDocs, err := todoDocQuery.All(ctx)

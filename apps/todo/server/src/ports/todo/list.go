@@ -2,16 +2,26 @@ package todo_rest
 
 import (
 	"libs/http_server"
+	"time"
 	todo_applications "todo-server/applications/todo"
 	"todo-server/domains"
 )
 
-type ListQuery struct {
-	GroupID *string `query:"groupID, omitempty"`
+type ListRequestQuery struct {
+	DueAtAfter *time.Time `query:"dueAtAfter"`
+	Statuses   []string   `query:"statuses, omitempty"`
 }
 
-func QueryToFilter(query ListQuery) todo_applications.QueryFilter {
-	return todo_applications.QueryFilter{}
+func QueryToFilter(query ListRequestQuery) todo_applications.QueryFilter {
+	var statuses []domains.TodoStatus
+	for _, reqStatus := range query.Statuses {
+		status := domains.TodoStatus(reqStatus)
+		statuses = append(statuses, status)
+	}
+	return todo_applications.QueryFilter{
+		DueAtAfter: query.DueAtAfter,
+		Statuses:   statuses,
+	}
 }
 
 type ListResponseBody struct {
@@ -21,7 +31,7 @@ type ListResponseBody struct {
 func (ctrl controller) list(reqCtx *http_server.RequestContext) error {
 	ctx := reqCtx.UserContext()
 
-	var query ListQuery
+	var query ListRequestQuery
 	err := reqCtx.QueryParser(&query)
 	if err != nil {
 		ctrl.logger.Warn(ctx, err)
