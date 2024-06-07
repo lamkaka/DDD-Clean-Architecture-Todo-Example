@@ -1,0 +1,9 @@
+// This file allows go modules to import the local versions of each other and facilitates easy devlopment.
+// Update this by running go work use -r .
+// For more details see https://go.dev/ref/mod#workspaces
+
+go 1.21
+
+use (
+	./libs/go/errors
+)
