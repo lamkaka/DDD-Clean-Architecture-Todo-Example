@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{template "todo.server.name" .}}
+  labels: {{include "todo.server.labels" . | nindent 4}}
+spec:
+  replicas: {{.Values.server.replicas}}
+  selector:
+    matchLabels: {{include "todo.server.selectors" . | nindent 6}}
+  template:
+    metadata:
+      labels: {{include "todo.server.labels" . | nindent 8}}
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      imagePullSecrets:
+        - name: artifact-registry
+      containers:
+        - name: server
+          image: {{.Values.server.image | default (include "todo.server.defaultImage" .)}}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          resources: {{- toYaml .Values.server.resources | nindent 12}}
+          startupProbe:
+            httpGet:
+              path: /healthz/liveness
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 18
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz/liveness
+              port: 3000
+            periodSeconds: 3
+            failureThreshold: 3
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz/readiness
+              port: 3000
+            periodSeconds: 3
+            failureThreshold: 1
+            timeoutSeconds: 3
+          envFrom:
+            - configMapRef:
+                name: {{template "todo.server.name" .}}

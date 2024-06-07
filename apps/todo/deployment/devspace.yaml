@@ -1,0 +1,55 @@
+version: v2beta1
+name: todo
+
+imports:
+  - path: '../../..'
+
+pipelines:
+  dev:
+    run: |-
+      build_images --all
+      create_deployments --all
+      start_dev server
+  deploy:
+    run: |-
+      build_images --all
+      create_deployments --all
+
+images:
+  server:
+    image: localhost:5000/todo-server
+    dockerfile: ../server/Dockerfile
+    context: ../../../
+    tags:
+      - '${devspace.timestamp}'
+
+deployments:
+  todo:
+    namespace: demo-devspace
+    helm:
+      chart:
+        name: ./chart
+      values:
+        common:
+          log_level: debug
+        server:
+          image: demo.dev/todo-server:${devspace.timestamp}
+
+dev:
+  server:
+    imageSelector: demo.dev/todo-server:${devspace.timestamp}
+    namespace: demo-devspace
+    devImage: ghcr.io/loft-sh/devspace-containers/go:1.19-alpine
+    sync:
+      - path: ../:./
+      - path: ../../../libs/go:../libs/go
+    ssh:
+      enabled: true
+    proxyCommands:
+      - command: devspace
+      - command: kubectl
+      - command: helm
+    ports:
+      - port: '3000'
+    open:
+      - url: http://localhost:3000

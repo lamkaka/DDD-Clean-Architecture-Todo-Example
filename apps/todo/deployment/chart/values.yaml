@@ -1,0 +1,23 @@
+docker_registry: 'demo.dev'
+version: '0.0.0'
+
+common:
+  go_env: production
+  log_level: info
+
+server:
+  port: 80 # Which port to expose the Service, note that this port is for within-cluster use only
+  replicas: 2 # Number of replicas to run the Pods with
+  resources: # Resource specification for the Pods
+    limits:
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  postgres:
+    host: infra-postgres
+    port: '5432'
+    user: demo
+    password: demo
+    dbName: todo
+    sslEnable: 'false'

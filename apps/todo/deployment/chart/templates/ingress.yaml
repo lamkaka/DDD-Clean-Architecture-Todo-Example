@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{.Release.Name}}
+  labels: {{include "todo.common.labels" . | nindent 4}}
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: {{.Release.Namespace}}-{{template "todo.middleware.name" .}}@kubernetescrd
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /todo
+            pathType: Prefix
+            backend:
+              service:
+                name: {{template "todo.server.name" .}}
+                port:
+                  number: {{.Values.server.port}}

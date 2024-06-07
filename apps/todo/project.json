@@ -1,0 +1,65 @@
+{
+  "name": "todo-server",
+  "root": "apps/todo",
+  "projectType": "application",
+  "targets": {
+    "install": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go mod download",
+        "cwd": "apps/todo/server/src"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go generate .",
+        "cwd": "apps/todo/server/src"
+      }
+    },
+    "fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gofmt -l -w . && go mod tidy",
+        "cwd": "apps/todo/server/src"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go vet && go run honnef.co/go/tools/cmd/staticcheck@latest",
+        "cwd": "apps/todo/server/src"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go run github.com/onsi/ginkgo/v2/ginkgo -tags test -p ./...",
+        "cwd": "apps/todo/server/src"
+      }
+    },
+    "deploy-local": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["devspace deploy --no-warn"],
+        "parallel": false,
+        "cwd": "apps/todo/deployment"
+      },
+      "configurations": {
+        "full": {
+          "commands": [
+            "pnpm nx deploy-local infra --configuration=full",
+            "devspace deploy --no-warn"
+          ]
+        }
+      }
+    },
+    "cleanup-local": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "devspace purge --no-warn",
+        "cwd": "apps/todo/deployment"
+      }
+    }
+  }
+}
